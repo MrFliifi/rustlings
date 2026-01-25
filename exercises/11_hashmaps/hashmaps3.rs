@@ -8,7 +8,7 @@
 
 use std::collections::HashMap;
 
-// A structure to store the goal details of a team.
+
 #[derive(Default)]
 struct TeamScores {
     goals_scored: u8,
@@ -16,25 +16,28 @@ struct TeamScores {
 }
 
 fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
-    // The name of the team is the key and its associated struct is the value.
-    let mut scores = HashMap::<&str, TeamScores>::new();
+    let mut scores = HashMap::new();
 
     for line in results.lines() {
-        let mut split_iterator = line.split(',');
-        // NOTE: We use `unwrap` because we didn't deal with error handling yet.
-        let team_1_name = split_iterator.next().unwrap();
-        let team_2_name = split_iterator.next().unwrap();
-        let team_1_score: u8 = split_iterator.next().unwrap().parse().unwrap();
-        let team_2_score: u8 = split_iterator.next().unwrap().parse().unwrap();
+        let mut it = line.split(',');
 
-        // TODO: Populate the scores table with the extracted details.
-        // Keep in mind that goals scored by team 1 will be the number of goals
-        // conceded by team 2. Similarly, goals scored by team 2 will be the
-        // number of goals conceded by team 1.
+        let team_1 = it.next().unwrap();
+        let team_2 = it.next().unwrap();
+        let goals_1: u8 = it.next().unwrap().parse().unwrap();
+        let goals_2: u8 = it.next().unwrap().parse().unwrap();
+
+        let team1_entry: &mut TeamScores = scores.entry(team_1).or_default();
+        team1_entry.goals_scored += goals_1;
+        team1_entry.goals_conceded += goals_2;
+
+        let team2_entry: &mut TeamScores = scores.entry(team_2).or_default();
+        team2_entry.goals_scored += goals_2;
+        team2_entry.goals_conceded += goals_1;
     }
 
     scores
 }
+
 
 fn main() {
     // You can optionally experiment here.
